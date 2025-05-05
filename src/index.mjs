@@ -1,4 +1,8 @@
 import readline from 'node:readline';
+import path from 'node:path';
+import { listDirectory } from './commands/ls.mjs';
+
+const currentDir = path.dirname(import.meta.filename);
 
 const args = process.env;
 const userName = args.npm_config_username;
@@ -13,19 +17,22 @@ const rl = readline.createInterface({
 
 rl.prompt();
 
-rl.on('line', (input) => {
-    const trimmed = input.trim();
-  
-    if (trimmed === 'exit') {
-      console.log(`\x1b[36mThank you for using File Manager, ${userName} ,goodbye!\x1b[0m`);
+rl.on('line', async (input) => {
+  const [command, ...args] = input.trim().split(' ');
+  switch (command) {
+    case 'ls':
+      await listDirectory(currentDir);
+      break;
+    case 'exit':
+      console.log('Exiting the File Manager. Goodbye!');
       rl.close();
-    } else {
-      console.log(`Unknown command: ${trimmed}`);
-      rl.prompt();
-    }
-  });
+      break;
+    default:
+      console.log(`Unknown command: ${command}`);
+  }
+  rl.prompt();
+});
   
   rl.on('close', () => {
     process.exit(0);
   });
-  
