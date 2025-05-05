@@ -5,6 +5,7 @@ import { changeDirectory } from './commands/cd.mjs';
 import { readFile } from './commands/cat.mjs';
 import { addFile } from './commands/add.mjs';
 import { removeFile } from './commands/rm.mjs';
+import { copyFile } from './commands/cp.mjs';
 
 let currentDir = path.dirname(import.meta.filename);
 
@@ -46,6 +47,14 @@ rl.on('line', async (input) => {
     case 'rm':
       await removeFile(currentDir, args);
       break;
+      case 'cp':
+        if (args.length < 2) {
+          console.log('Usage: cp <source> <destination>');
+        } else {
+          const [source, destination] = args;
+          await copyFile(source, destination);
+        }
+        break;
     case '.exit':
       rl.close();
       break;
@@ -55,6 +64,7 @@ rl.on('line', async (input) => {
   rl.prompt();
   updatePrompt();
 });
+updatePrompt();
   
   rl.on('close', () => {
     console.log(`\x1b[36mThank you for using File Manager, ${userName} ,goodbye!\x1b[0m`);
