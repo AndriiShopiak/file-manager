@@ -14,8 +14,12 @@ console.log(`\x1b[32mWelcome to the File Manager, ${userName}!\x1b[0m`);
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-    prompt: `You are currently in ${currentDir} > `,
 });
+
+const updatePrompt = () => {
+  rl.setPrompt(`You are currently in ${currentDir} > `);
+  rl.prompt();
+};
 
 rl.prompt();
 
@@ -27,10 +31,12 @@ rl.on('line', async (input) => {
       break;
     case 'cd':
       currentDir = await changeDirectory(currentDir, args[0]);
-      rl.setPrompt(`You are currently in ${currentDir} > `);
       break;
     case 'cat':
       await readFile(currentDir, args[0]);
+      break;
+    case 'up':
+      currentDir = path.dirname(currentDir);
       break;
     case '.exit':
       rl.close();
@@ -39,6 +45,7 @@ rl.on('line', async (input) => {
       console.log(`Unknown command: ${command}`);
   }
   rl.prompt();
+  updatePrompt();
 });
   
   rl.on('close', () => {
