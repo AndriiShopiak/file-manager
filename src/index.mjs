@@ -3,6 +3,7 @@ import path from 'node:path';
 import { listDirectory } from './commands/ls.mjs';
 import { changeDirectory } from './commands/cd.mjs';
 import { readFile } from './commands/cat.mjs';
+import { addFile } from './commands/add.mjs';
 
 let currentDir = path.dirname(import.meta.filename);
 
@@ -37,6 +38,9 @@ rl.on('line', async (input) => {
       break;
     case 'up':
       currentDir = path.dirname(currentDir);
+      break;
+    case 'add':
+      await addFile(currentDir, args);
       break;
     case '.exit':
       rl.close();
