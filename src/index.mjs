@@ -4,7 +4,7 @@ import { listDirectory } from './commands/ls.mjs';
 import { changeDirectory } from './commands/cd.mjs';
 import { readFile } from './commands/cat.mjs';
 
-const currentDir = path.dirname(import.meta.filename);
+let currentDir = path.dirname(import.meta.filename);
 
 const args = process.env;
 const userName = args.npm_config_username;
@@ -27,6 +27,7 @@ rl.on('line', async (input) => {
       break;
     case 'cd':
       currentDir = await changeDirectory(currentDir, args[0]);
+      rl.setPrompt(`You are currently in ${currentDir} > `);
       break;
     case 'cat':
       await readFile(currentDir, args[0]);
