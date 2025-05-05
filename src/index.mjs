@@ -4,6 +4,7 @@ import { listDirectory } from './commands/ls.mjs';
 import { changeDirectory } from './commands/cd.mjs';
 import { readFile } from './commands/cat.mjs';
 import { addFile } from './commands/add.mjs';
+import { removeFile } from './commands/rm.mjs';
 
 let currentDir = path.dirname(import.meta.filename);
 
@@ -41,6 +42,9 @@ rl.on('line', async (input) => {
       break;
     case 'add':
       await addFile(currentDir, args);
+      break;
+    case 'rm':
+      await removeFile(currentDir, args);
       break;
     case '.exit':
       rl.close();
