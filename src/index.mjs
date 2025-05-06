@@ -1,0 +1,72 @@
+import readline from 'node:readline';
+import path from 'node:path';
+import { listDirectory } from './commands/ls.mjs';
+import { changeDirectory } from './commands/cd.mjs';
+import { readFile } from './commands/cat.mjs';
+import { addFile } from './commands/add.mjs';
+import { removeFile } from './commands/rm.mjs';
+import { copyFile } from './commands/cp.mjs';
+
+let currentDir = path.dirname(import.meta.filename);
+
+const args = process.env;
+const userName = args.npm_config_username;
+
+console.log(`\x1b[32mWelcome to the File Manager, ${userName}!\x1b[0m`);
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+});
+
+const updatePrompt = () => {
+  rl.setPrompt(`You are currently in ${currentDir} > `);
+  rl.prompt();
+};
+
+rl.prompt();
+
+rl.on('line', async (input) => {
+  const [command, ...args] = input.trim().split(' ');
+  switch (command) {
+    case 'ls':
+      await listDirectory(currentDir);
+      break;
+    case 'cd':
+      currentDir = await changeDirectory(currentDir, args[0]);
+      break;
+    case 'cat':
+      await readFile(currentDir, args[0]);
+      break;
+    case 'up':
+      currentDir = path.dirname(currentDir);
+      break;
+    case 'add':
+      await addFile(currentDir, args);
+      break;
+    case 'rm':
+      await removeFile(currentDir, args);
+      break;
+      case 'cp':
+        if (args.length < 2) {
+          console.log('Usage: cp <source> <destination>');
+        } else {
+          const [source, destination] = args;
+          await copyFile(source, destination);
+        }
+        break;
+    case '.exit':
+      rl.close();
+      break;
+    default:
+      console.log(`Unknown command: ${command}`);
+  }
+  rl.prompt();
+  updatePrompt();
+});
+updatePrompt();
+  
+  rl.on('close', () => {
+    console.log(`\x1b[36mThank you for using File Manager, ${userName} ,goodbye!\x1b[0m`);
+    process.exit(0);
+  });
